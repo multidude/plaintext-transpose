@@ -5,7 +5,7 @@ import (
 	"math"
 	"os"
 	"strconv"
-	s "strings"
+	"strings"
 	"time"
 
 	"github.com/multidude/plaintext-transpose/plug-outputs/ledger"
@@ -77,24 +77,24 @@ func Trans(d *[]CSV, v *ledger.ViewData) {
 		expen := []string{"Expenses", "Misc", chain}
 		incom := []string{"Income", "Deposit", chain}
 
-		v.LedgerData[n].Account = s.Join(asset, ":")
+		v.LedgerData[n].Account = strings.Join(asset, ":")
 
 		switch r.Type {
 		case "CHANNEL_OPEN_FEE", "FEE", "FORWARD", "FORWARD_FEE":
 			if satint <= 0 {
-				v.LedgerData[n].Remainder = s.Join(feesO, ":")
+				v.LedgerData[n].Remainder = strings.Join(feesO, ":")
 			} else {
-				v.LedgerData[n].Remainder = s.Join(feesI, ":")
+				v.LedgerData[n].Remainder = strings.Join(feesI, ":")
 			}
 		case "LOCAL_CHANNEL_OPEN":
 			// Transfer from onchain to offchain
 			v.LedgerData[n].Remainder = "Assets:LND 1:OffChain"
 		case "PAYMENT":
-			v.LedgerData[n].Remainder = s.Join(expen, ":")
+			v.LedgerData[n].Remainder = strings.Join(expen, ":")
 		case "RECEIPT":
-			v.LedgerData[n].Remainder = s.Join(incom, ":")
+			v.LedgerData[n].Remainder = strings.Join(incom, ":")
 		case "CHANNEL_CLOSE":
-			v.LedgerData[n].Remainder = s.Join(incom, ":")
+			v.LedgerData[n].Remainder = strings.Join(incom, ":")
 		}
 		v.LedgerData[n].Comment1 = r.Note
 		v.LedgerData[n].Comment2 = r.TxID

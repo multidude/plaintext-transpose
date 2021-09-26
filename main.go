@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
-	s "strings"
 
 	"github.com/multidude/plaintext-transpose/plug-inputs/electrum"
 	"github.com/multidude/plaintext-transpose/plug-inputs/green"
@@ -23,9 +22,9 @@ func main() {
 	}
 
 	src := os.Args[1]
-	tplpath := s.Join([]string{"plug-inputs", src}, "/")
-	csvtemp := s.Join([]string{"ignore-csv", src}, "/")
-	csvpath := s.Join([]string{csvtemp, "csv"}, ".")
+	tplpath := strings.Join([]string{"plug-inputs", src}, "/")
+	csvtemp := strings.Join([]string{"ignore-csv", src}, "/")
+	csvpath := strings.Join([]string{csvtemp, "csv"}, ".")
 
 	f := openCSV(csvpath)
 	defer f.Close()
