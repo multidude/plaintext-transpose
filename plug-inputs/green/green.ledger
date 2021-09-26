@@ -1,14 +1,11 @@
-D 9,999.99 BIT
-D 9,999.99 CAD
-
 {{range .LedgerData}}
 {{.Datetime}} * {{.Comment1 }} {{.Comment2}}
 {{- if eq .Type "Deposit"}}
-	Assets:Green 3 Liquid 1			{{.Amount}} {{.Currency}}
+	Assets:Green				{{.Amount}} {{.Currency}}
 	Income:Ambiguous
 {{- end}}
 {{- if eq .Type "Withdrawal"}}
-	Assets:Green 3 Liquid 1			{{.Amount}} {{.Currency}}
+	Assets:Green				{{.Amount}} {{.Currency}}
 		{{- if .Fee}}
 	Expenses:Fees:OnChain			{{.Fee}} LBTC
 		{{- end}}

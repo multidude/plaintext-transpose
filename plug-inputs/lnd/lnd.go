@@ -71,7 +71,7 @@ func Trans(d *[]CSV, v *ledger.ViewData) {
 			chain = "Ambiguous"
 		}
 
-		asset := []string{"Assets", "LND 1", chain}
+		asset := []string{"Assets", "LND", chain}
 		feesO := []string{"Expenses", "Fees", chain}
 		feesI := []string{"Income", "Fees", chain}
 		expen := []string{"Expenses", "Misc", chain}
@@ -88,7 +88,7 @@ func Trans(d *[]CSV, v *ledger.ViewData) {
 			}
 		case "LOCAL_CHANNEL_OPEN":
 			// Transfer from onchain to offchain
-			v.LedgerData[n].Remainder = "Assets:LND 1:OffChain"
+			v.LedgerData[n].Remainder = "Assets:LND:OffChain"
 		case "PAYMENT":
 			v.LedgerData[n].Remainder = strings.Join(expen, ":")
 		case "RECEIPT":

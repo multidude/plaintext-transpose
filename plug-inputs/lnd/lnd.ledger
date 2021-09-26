@@ -1,33 +1,5 @@
-{{range .Sites}}
-{{.Datetime}} * {{.Type}} {{.SubType}}
-; {{.TxID}}
-; {{.Note}}
-; {{.Reference}}
-{{- if eq .Type "RECEIPT"}}
-	Assets:LND			{{.Amount}}
-	Income:Deposit
-{{- end}}
-{{- if eq .Type "LOCAL_CHANNEL_OPEN"}}
-	Assets:LND			-{{.Amount}}
-	{{- if .Fee}}
-	Expenses:Fees:Exchange		{{.Fee}}
-	{{- end}}
-	Expenses:Withdrawal
-{{- end}}
-{{- if eq .Type "Market"}}
-	{{- if eq .SubType "Buy"}}
-	Assets:LND			{{.Amount}} @@ {{.Value}}
-		{{- if .Fee}}
-	Expenses:Fees:Exchange		{{.Fee}}
-		{{- end}}
-	Assets:LND
-	{{- end}}
-	{{- if eq .SubType "Sell"}}
-	Assets:LND			-{{.Amount}} @@ {{.Value}}
-		{{- if .Fee}}
-	Expenses:Fees:Exchange		{{.Fee}}
-		{{- end}}
-	Assets:LND
-	{{- end}}
-{{- end}}
+{{range .LedgerData}}
+{{.Datetime}} * {{.Type}}
+	{{.Account}}			{{.Amount}}
+	{{.Remainder}}
 {{end}}
