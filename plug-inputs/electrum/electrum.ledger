@@ -1,0 +1,18 @@
+D 9,999.99 BIT
+D 9,999.99 CAD
+
+{{range .LedgerData}}
+{{.Datetime}} * {{.Comment1 }}
+;{{.Comment2 }}
+{{- if eq .Type "Deposit"}}
+	Assets:CCmk1p			{{.Amount}}
+	Income:Ambiguous
+{{- end}}
+{{- if eq .Type "Withdrawal"}}
+	Assets:CCmk1p			{{.Amount}}
+		{{- if .Fee}}
+	Expenses:Fees:OnChain		{{.Fee}}
+		{{- end}}
+	Expenses:Ambiguous
+{{- end}}
+{{end}}
