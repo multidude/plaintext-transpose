@@ -1,15 +1,15 @@
 {{range .LedgerData}}
+; {{.Comment2 }}
 {{.Datetime}} * {{.Comment1 }}
-;{{.Comment2 }}
 {{- if eq .Type "Deposit"}}
-	Assets:Electrum			{{.Amount}} BTC
-	Income:Ambiguous
+    Assets:Electrum			{{.Amount}} BTC
+    Income:Ambiguous
 {{- end}}
 {{- if eq .Type "Withdrawal"}}
-	Assets:Electrum			{{.Amount}} BTC
+    Assets:Electrum			{{.Amount}} BTC
 		{{- if .Fee}}
-	Expenses:Fees:OnChain		{{.Fee}} BTC
+    Expenses:Fees:OnChain		{{.Fee}} BTC
 		{{- end}}
-	Expenses:Ambiguous
+    Expenses:Ambiguous
 {{- end}}
 {{end}}
