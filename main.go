@@ -23,6 +23,9 @@ func main() {
 	}
 
 	csvpath := os.Args[1]
+	csvname := filepath.Base(csvpath)
+	csvsplt := strings.Split(csvname, ".")
+	csvnoex := csvsplt[0]
 	format := os.Args[2]
 	tplpath := strings.Join([]string{"plug-inputs", format}, "/")
 
@@ -56,7 +59,7 @@ func main() {
 	}
 
 	dlist := lsDir(tplpath)
-	templates, outputs := getPaths(dlist, tplpath, csvpath)
+	templates, outputs := getPaths(dlist, tplpath, csvnoex)
 	for i, f := range templates {
 		ledger.ParseTemplates(f, outputs[i], v)
 	}
@@ -82,16 +85,15 @@ func lsDir(tplpath string) []fs.FileInfo {
 }
 
 // Construct complete paths to each file in a directory listing
-func getPaths(dlist []fs.FileInfo, tplpath string, csvpath string) ([]string, []string) {
+func getPaths(dlist []fs.FileInfo, tplpath string, csvnoex string) ([]string, []string) {
 	var fn string
 	templates := make([]string, len(dlist))
 	outputs := make([]string, len(dlist))
-	csvname := filepath.Base(csvpath)
 	for i, f := range dlist {
 		fn = f.Name()
 		if strings.HasSuffix(fn, ".ledger") {
 			templates[i] = tplpath + "/" + fn
-			outputs[i] = "ignore-output/" + csvname + "." + fn
+			outputs[i] = "ignore-output/" + csvnoex + "." + fn
 			fmt.Println(fn)
 		}
 	}
