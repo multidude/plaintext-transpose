@@ -21,10 +21,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	src := os.Args[1]
-	tplpath := strings.Join([]string{"plug-inputs", src}, "/")
-	csvtemp := strings.Join([]string{"ignore-csv", src}, "/")
-	csvpath := strings.Join([]string{csvtemp, "csv"}, ".")
+	csvpath := os.Args[1]
+	format := os.Args[2]
+	tplpath := strings.Join([]string{"plug-inputs", format}, "/")
 
 	f := openCSV(csvpath)
 	defer f.Close()
@@ -33,7 +32,7 @@ func main() {
 	// TODO support available plugins
 	// requires dynamically loading mods
 	// https://appliedgo.net/plugins/
-	switch src {
+	switch format {
 	case "bitstamp":
 		var d []bitstamp.CSV
 		bitstamp.UnmarshalCSV(f, &d)
@@ -51,7 +50,7 @@ func main() {
 		green.UnmarshalCSV(f, &d)
 		green.Trans(&d, &v)
 	default:
-		fmt.Println("Invalid src argument")
+		fmt.Println("Invalid format argument")
 		os.Exit(1)
 	}
 
