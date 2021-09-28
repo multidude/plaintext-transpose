@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/multidude/plaintext-transpose/plug-inputs/electrum"
@@ -55,7 +56,7 @@ func main() {
 	}
 
 	dlist := lsDir(tplpath)
-	templates, outputs := getPaths(dlist, tplpath)
+	templates, outputs := getPaths(dlist, tplpath, csvpath)
 	for i, f := range templates {
 		ledger.ParseTemplates(f, outputs[i], v)
 	}
@@ -81,15 +82,16 @@ func lsDir(tplpath string) []fs.FileInfo {
 }
 
 // Construct complete paths to each file in a directory listing
-func getPaths(dlist []fs.FileInfo, tplpath string) ([]string, []string) {
+func getPaths(dlist []fs.FileInfo, tplpath string, csvpath string) ([]string, []string) {
 	var fn string
 	templates := make([]string, len(dlist))
 	outputs := make([]string, len(dlist))
+	csvname := filepath.Base(csvpath)
 	for i, f := range dlist {
 		fn = f.Name()
 		if strings.HasSuffix(fn, ".ledger") {
 			templates[i] = tplpath + "/" + fn
-			outputs[i] = "ignore-output/" + fn
+			outputs[i] = "ignore-output/" + csvname + "." + fn
 			fmt.Println(fn)
 		}
 	}
