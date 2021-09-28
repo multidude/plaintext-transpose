@@ -85,6 +85,7 @@ func lsDir(tplpath *string) []fs.FileInfo {
 }
 
 // Construct complete paths to each file in a directory listing
+// Return one slice of templates and one of output files
 func getPaths(dlist *[]fs.FileInfo, tplpath *string, csvnoex *string) ([]string, []string) {
 	var fn string
 	templates := make([]string, len(*dlist))
