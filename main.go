@@ -29,7 +29,7 @@ func main() {
 	format := os.Args[2]
 	tplpath := strings.Join([]string{"plug-inputs", format}, "/")
 
-	f := openCSV(csvpath)
+	f := openCSV(&csvpath)
 	defer f.Close()
 	var v ledger.ViewData
 
@@ -58,15 +58,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	dlist := lsDir(tplpath)
-	templates, outputs := getPaths(dlist, tplpath, csvnoex)
+	dlist := lsDir(&tplpath)
+	templates, outputs := getPaths(&dlist, &tplpath, &csvnoex)
 	for i, f := range templates {
 		ledger.ParseTemplates(f, outputs[i], v)
 	}
 }
 
-func openCSV(filename string) *os.File {
-	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE, os.ModePerm)
+func openCSV(filename *string) *os.File {
+	f, err := os.OpenFile(*filename, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
 		fmt.Println("File open error")
 		os.Exit(1)
@@ -75,8 +75,8 @@ func openCSV(filename string) *os.File {
 }
 
 // Returns a directory listing
-func lsDir(tplpath string) []fs.FileInfo {
-	f, err := ioutil.ReadDir(tplpath)
+func lsDir(tplpath *string) []fs.FileInfo {
+	f, err := ioutil.ReadDir(*tplpath)
 	if err != nil {
 		fmt.Println("Directory listing error")
 		os.Exit(1)
@@ -85,15 +85,15 @@ func lsDir(tplpath string) []fs.FileInfo {
 }
 
 // Construct complete paths to each file in a directory listing
-func getPaths(dlist []fs.FileInfo, tplpath string, csvnoex string) ([]string, []string) {
+func getPaths(dlist *[]fs.FileInfo, tplpath *string, csvnoex *string) ([]string, []string) {
 	var fn string
-	templates := make([]string, len(dlist))
-	outputs := make([]string, len(dlist))
-	for i, f := range dlist {
+	templates := make([]string, len(*dlist))
+	outputs := make([]string, len(*dlist))
+	for i, f := range *dlist {
 		fn = f.Name()
 		if strings.HasSuffix(fn, ".ledger") {
-			templates[i] = tplpath + "/" + fn
-			outputs[i] = "ignore-output/" + csvnoex + "." + fn
+			templates[i] = *tplpath + "/" + fn
+			outputs[i] = "ignore-output/" + *csvnoex + "." + fn
 			fmt.Println(fn)
 		}
 	}
