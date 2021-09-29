@@ -66,46 +66,52 @@ func chaininess(r *CSV, chain *string) {
 // TODO: return a basic slice, reformat in main
 func Trans(d *[]CSV, v *ledger.ViewData) {
 	var chain string
-	var sats float64
+	var sats int
 	v.LedgerData = make([]ledger.Ledger, len(*d))
 	for n, r := range *d {
+		// Easy stuff
+		v.LedgerData[n].Comment1 = r.Note
+		v.LedgerData[n].Comment2 = r.TxID
+		v.LedgerData[n].Comment3 = r.Reference
+		v.LedgerData[n].Type = r.Type
+
 		// Convert date format
 		dt, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", r.Timestamp)
 		v.LedgerData[n].Datetime = dt.Format("2006-01-02")
 
 		mSatToBTC(&r, v, &n)
-
-		v.LedgerData[n].Type = r.Type
-
 		chaininess(&r, &chain)
 
 		asset := []string{"Assets", "LND", chain}
-		feesO := []string{"Expenses", "Fees", chain}
-		feesI := []string{"Income", "Fees", chain}
-		expen := []string{"Expenses", "Misc", chain}
-		incom := []string{"Income", "Deposit", chain}
-
 		v.LedgerData[n].Account = strings.Join(asset, ":")
 
-		switch r.Type {
-		case "CHANNEL_OPEN_FEE", "CHANNEL_CLOSE_FEE", "FEE", "FORWARD", "FORWARD_FEE":
-			if sats <= 0 {
-				v.LedgerData[n].Remainder = strings.Join(feesO, ":")
-			} else {
-				v.LedgerData[n].Remainder = strings.Join(feesI, ":")
-			}
-		case "LOCAL_CHANNEL_OPEN":
-			// Transfer from onchain to offchain
-			v.LedgerData[n].Remainder = "Assets:LND:OffChain"
-		case "PAYMENT":
-			v.LedgerData[n].Remainder = strings.Join(expen, ":")
-		case "RECEIPT":
-			v.LedgerData[n].Remainder = strings.Join(incom, ":")
-		case "CHANNEL_CLOSE":
-			v.LedgerData[n].Remainder = strings.Join(incom, ":")
+		remainder(&r, v, &chain, &n, &sats)
+	}
+}
+
+// Differentiate and assign income and expenses
+// The remainder is a ledger entry with no value
+func remainder(r *CSV, v *ledger.ViewData, chain *string, n *int, sats *int) {
+	feesO := []string{"Expenses", "Fees", *chain}
+	feesI := []string{"Income", "Fees", *chain}
+	expen := []string{"Expenses", "Misc", *chain}
+	incom := []string{"Income", "Deposit", *chain}
+
+	switch r.Type {
+	case "CHANNEL_OPEN_FEE", "CHANNEL_CLOSE_FEE", "FEE", "FORWARD", "FORWARD_FEE":
+		if *sats <= 0 {
+			v.LedgerData[*n].Remainder = strings.Join(feesO, ":")
+		} else {
+			v.LedgerData[*n].Remainder = strings.Join(feesI, ":")
 		}
-		v.LedgerData[n].Comment1 = r.Note
-		v.LedgerData[n].Comment2 = r.TxID
-		v.LedgerData[n].Comment3 = r.Reference
+	case "LOCAL_CHANNEL_OPEN":
+		// Transfer from onchain to offchain
+		v.LedgerData[*n].Remainder = "Assets:LND:OffChain"
+	case "PAYMENT":
+		v.LedgerData[*n].Remainder = strings.Join(expen, ":")
+	case "RECEIPT":
+		v.LedgerData[*n].Remainder = strings.Join(incom, ":")
+	case "CHANNEL_CLOSE":
+		v.LedgerData[*n].Remainder = strings.Join(incom, ":")
 	}
 }
