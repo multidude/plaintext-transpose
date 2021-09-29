@@ -85,16 +85,18 @@ func lsDir(tplpath *string) []fs.FileInfo {
 }
 
 // Construct complete paths to each file in a directory listing
-// Return one slice of templates and one of output files
+// Return one slice of templates and one of respective output files
 func getPaths(dlist *[]fs.FileInfo, tplpath *string, csvnoex *string) ([]string, []string) {
 	var fn string
+	var fnsplit []string
 	templates := make([]string, len(*dlist))
 	outputs := make([]string, len(*dlist))
 	for i, f := range *dlist {
 		fn = f.Name()
-		if strings.HasSuffix(fn, ".ledger") {
+		if strings.HasSuffix(fn, ".tpl") {
+			fnsplit = strings.Split(fn, ".")
 			templates[i] = *tplpath + "/" + fn
-			outputs[i] = "ignore-output/" + *csvnoex + "." + fn
+			outputs[i] = "ignore-output/" + *csvnoex + "." + fnsplit[1]
 			fmt.Println(fn)
 		}
 	}
