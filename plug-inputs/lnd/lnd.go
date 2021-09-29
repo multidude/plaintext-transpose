@@ -49,6 +49,18 @@ func mSatToBTC(r *CSV, v *ledger.ViewData, n *int) {
 	v.LedgerData[*n].Amount = fmt.Sprintf("%.8f BTC", btcflo)
 }
 
+func chaininess(r *CSV, chain *string) {
+	switch r.OnChain {
+	case "true":
+		*chain = "OnChain"
+	case "false":
+		*chain = "OffChain"
+	default:
+		fmt.Println("WARNING OnChain is neither True nor False")
+		*chain = "Ambiguous"
+	}
+}
+
 // Transpose the CSV export from faraday (lnd, bitcoin)
 // into LedgerData, in a ledger.ViewData Container
 // TODO: return a basic slice, reformat in main
@@ -65,15 +77,7 @@ func Trans(d *[]CSV, v *ledger.ViewData) {
 
 		v.LedgerData[n].Type = r.Type
 
-		switch r.OnChain {
-		case "true":
-			chain = "OnChain"
-		case "false":
-			chain = "OffChain"
-		default:
-			fmt.Println("WARNING OnChain is neither True nor False")
-			chain = "Ambiguous"
-		}
+		chaininess(&r, &chain)
 
 		asset := []string{"Assets", "LND", chain}
 		feesO := []string{"Expenses", "Fees", chain}
