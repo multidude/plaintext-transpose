@@ -1,5 +1,6 @@
 {{range .LedgerData}}
-{{.Datetime}} * {{.Comment1 }} {{.Comment2}}
+; {{.Comment2}}
+{{.Datetime}} * {{.Comment1 }} 
 {{- if eq .Type "Deposit"}}
 	Assets:Green				{{.Amount}} {{.Currency}}
 	Income:Ambiguous
