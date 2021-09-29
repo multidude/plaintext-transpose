@@ -36,28 +36,32 @@ func UnmarshalCSV(f *os.File, d *[]CSV) {
 	}
 }
 
+func mSatToBTC(r *CSV, v *ledger.ViewData, n *int) {
+	// Convert mSat to BTC
+	// divide by 1,000 and round down to nearest integer
+	// divide result by 100,000,000
+	// print with 8 digit accuracy
+	// append currency code BTC
+	mflo, _ := strconv.ParseFloat(r.AmountMsat, 32)
+	satflo := mflo / 1000
+	sats := math.Floor(satflo)
+	btcflo := sats / 100000000
+	v.LedgerData[*n].Amount = fmt.Sprintf("%.8f BTC", btcflo)
+}
+
 // Transpose the CSV export from faraday (lnd, bitcoin)
 // into LedgerData, in a ledger.ViewData Container
 // TODO: return a basic slice, reformat in main
 func Trans(d *[]CSV, v *ledger.ViewData) {
-	var satflo float64
 	var chain string
+	var sats float64
 	v.LedgerData = make([]ledger.Ledger, len(*d))
 	for n, r := range *d {
 		// Convert date format
 		dt, _ := time.Parse("2006-01-02 15:04:05 -0700 MST", r.Timestamp)
 		v.LedgerData[n].Datetime = dt.Format("2006-01-02")
 
-		// Convert mSat to BTC
-		// divide by 1,000 and round down to nearest integer
-		// divide result by 100,000,000
-		// print with 8 digit accuracy
-		// append currency code BTC
-		mflo, _ := strconv.ParseFloat(r.AmountMsat, 32)
-		satflo = mflo / 1000
-		satint := math.Floor(satflo)
-		btcflo := satint / 100000000
-		v.LedgerData[n].Amount = fmt.Sprintf("%.8f BTC", btcflo)
+		mSatToBTC(&r, v, &n)
 
 		v.LedgerData[n].Type = r.Type
 
@@ -80,8 +84,8 @@ func Trans(d *[]CSV, v *ledger.ViewData) {
 		v.LedgerData[n].Account = strings.Join(asset, ":")
 
 		switch r.Type {
-		case "CHANNEL_OPEN_FEE", "FEE", "FORWARD", "FORWARD_FEE":
-			if satint <= 0 {
+		case "CHANNEL_OPEN_FEE", "CHANNEL_CLOSE_FEE", "FEE", "FORWARD", "FORWARD_FEE":
+			if sats <= 0 {
 				v.LedgerData[n].Remainder = strings.Join(feesO, ":")
 			} else {
 				v.LedgerData[n].Remainder = strings.Join(feesI, ":")
