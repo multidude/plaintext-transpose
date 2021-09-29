@@ -54,7 +54,7 @@ func main() {
 		green.UnmarshalCSV(f, &d)
 		green.Trans(&d, &v)
 	default:
-		fmt.Println("Invalid format argument")
+		fmt.Println("Specified plugin not found")
 		os.Exit(1)
 	}
 
